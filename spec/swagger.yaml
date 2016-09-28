@@ -11,8 +11,6 @@ info:
     
     For bug reports and feature requests, please use our github repo issue tracker at: https://github.com/ThreadsCulture/REST-API/issues
     
-    
-    
     # OAuth Authentication
     API Authentication is done via an OAuth token. To retrieve an oauth token, send an HTTP `POST` request to `https://YOUR-COMPANY-PORTAL.ourthreads.com/oauth/token`
     
@@ -241,7 +239,7 @@ definitions:
       supervisor_email:
         type: string
         description: |
-          E-mail of the manager this person reports to. This manager must alreayd be in the system and be at least a manager or admin role. If this property is supplied, position and department must also be supplied. The position created will automatically be assigned to this supervisor as an employee.
+          E-mail of the manager this person reports to. This manager must already be in the system and be at least a manager or admin role. If this property is supplied, position and department must also be supplied. The position created will automatically be assigned to this supervisor as an employee.
       phone_number:
         type: string
         description: Phone number 
@@ -303,7 +301,7 @@ definitions:
       supervisor_email:
         type: string
         description: |
-          E-mail of the manager this person reports to. This manager must alreayd be in the system and be at least a manager or admin role. The position created will automatically be assigned to this supervisor as an employee.
+          E-mail of the manager this person reports to. This manager must already be in the system and be at least a manager or admin role. The position created will automatically be assigned to this supervisor as an employee.
   Role:
     type: string
     default: employee
