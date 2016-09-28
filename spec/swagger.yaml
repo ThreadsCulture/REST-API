@@ -9,7 +9,7 @@ info:
     This API is currently in beta. 
     Please e-mail engineering@threadsculture.com to receive a client ID and secret to access the API. You must have an active Threads account with a admin user credentials to use this API.
     
-    For bug reports, please use our github repo issue tracker at: https://github.com/ThreadsCulture/REST-API/issues
+    For bug reports and feature requests, please use our github repo issue tracker at: https://github.com/ThreadsCulture/REST-API/issues
     
     # OAuth Authentication
     API Authentication is done via an OAuth token. To retrieve an oauth token, send an HTTP `POST` request to `https://YOUR-COMPANY-PORTAL.ourthreads.com/oauth/token`
@@ -21,14 +21,13 @@ info:
     * `email` - The e-mail address of the user account the API will function on behalf of
     * `password` - The password of the user account the API will function on behalf of
     
-    Example POST URL: http://YOUR-COMPANY-PORTAL.ourthreads.com/oauth/token?client_id=de65bb7b6f420d9caf5305ca342f71c95f516bb7459aaa4e7bab969bdce59cf5&client_secret=fd63d92e98fadba9914e3f89212cf5d1d574c0f9f861bd9c9a2ef796fd281757&grant_type=password&email=chris%2Brevolution%40threadsculture.com&password=abcd1234
+    [Fully constructed sample URL](https://YOUR-COMPANY-PORTAL.ourthreads.com/oauth/token?client_id=de65bb7b6f420d9caf5305ca342f71c95f516bb7459aaa4e7bab969bdce59cf5&client_secret=fd63d92e98fadba9914e3f89212cf5d1d574c0f9f861bd9c9a2ef796fd281757&grant_type=password&email=example%40threadsculture.com&password=abcd1234)
     
     Once a token is retrieved, it should be placed in the HTTP `Bearer` header of every HTTP request like:
     
     `Bearer 7dd917ca6702e8cdf6e66892afad723ec85b8e3fe6104bcb2d53bf64f4a76680`
     
-    Tokens expire after 2 hours and need to be refreshed.
-    
+    Tokens expire after 2 hours.
     
   x-logo:
     url: http://www.threadsculture.com/content/uploads/2016/09/threads_logo_small.png
