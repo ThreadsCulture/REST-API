@@ -2,11 +2,16 @@ swagger: '2.0'
 info:
   version: 1.0.0
   title: Threads REST API
+  contact:
+    email: engineering@threadsculture.com
   description: |
+    # Introduction
     This API is currently in beta. 
-    Please e-mail engineering@threadsculture.com to receive a client ID and secret to access the API.
+    Please e-mail engineering@threadsculture.com to receive a client ID and secret to access the API. You must have an active Threads account with a admin user credentials to use this API.
     
-    ## OAuth Authentication
+    For bug reports, please use our github repo issue tracker at: https://github.com/ThreadsCulture/REST-API/issues
+    
+    # OAuth Authentication
     API Authentication is done via an OAuth token. To retrieve an oauth token, send an HTTP `POST` request to `https://YOUR-COMPANY-PORTAL.ourthreads.com/oauth/token`
     
     This request should have the following query parameters:
@@ -43,10 +48,17 @@ securityDefinitions:
     scopes: {
       "basic": "Modify your company and users"
     }
+tags:
+  - name: users
+    description: Manage creation and removal of users
+  - name: positions
+    description: Manage job positions and assignments
 paths:
   /users:
     get:
       summary: List all users for your company
+      tags:
+        - users
       security:
         - oauth:
           - basic
@@ -59,6 +71,8 @@ paths:
               $ref: '#/definitions/UserResponse'
     post:
       summary: Create new user for your company
+      tags:
+        - users
       description: |
         If `position` and `department` are supplied, this will create a new job position (and new department if necessary)
         and assign the created user to the job.
@@ -85,6 +99,8 @@ paths:
   '/users/{user_id}':
     get:
       summary: Get a specific user by user ID
+      tags:
+        - users
       security:
         - oauth:
           - basic
@@ -103,6 +119,8 @@ paths:
           description: User not found
     put:
       summary: Update a user
+      tags:
+        - users
       description: Update user information
       security:
         - oauth:
@@ -131,6 +149,8 @@ paths:
   '/users/{user_id}/position':
     post:
       summary: Assign new position to user
+      tags:
+        - positions
       description: |
         Create new position for user and assign them to it. Fails if the user is already assigned to a position.
       security:
@@ -159,6 +179,8 @@ paths:
           description: Required parameter missing
     delete:
       summary: Unassign user from position
+      tags:
+        - positions
       description: Remove user from their org. chart position
       security:
         - oauth:
