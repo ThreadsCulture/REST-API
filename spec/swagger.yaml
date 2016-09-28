@@ -214,7 +214,7 @@ paths:
 definitions:
   UserCreateRequest:
     type: object
-    required: ["first_name","last_name","email","role","password_digest"]
+    required: ["first_name","last_name","email","role","password"]
     properties:
       first_name:
         type: string
@@ -227,9 +227,9 @@ definitions:
         description: E-mail address of user
       role:
         $ref: '#/definitions/Role'
-      password_digest:
+      password:
         type: string
-        description: Password to use as the user's password 
+        description: Password to use as the user's password for logging in
       position:
         type: string
         description: Job title of position
@@ -292,12 +292,14 @@ definitions:
         type: string
   PositionRequest:
     type: object
-    required: ["job_title","department"]
+    required: ["position","department"]
     properties:
-      job_title:
+      position:
         type: string
+        description: The job title for this position
       department:
         type: string
+        description: The department that this job is a part of. If this matches an existing department
       supervisor_email:
         type: string
         description: |
