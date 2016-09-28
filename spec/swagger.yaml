@@ -1,0 +1,279 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Threads REST API
+  description: |
+    This API is currently in beta. 
+    Please e-mail engineering@threadsculture.com to receive a client ID and secret to access the API.
+    
+    ## OAuth Authentication
+    API Authentication is done via an OAuth token. To retrieve an oauth token, send an HTTP `POST` request to `https://YOUR-COMPANY-PORTAL.ourthreads.com/oauth/token`
+    
+    This request should have the following query parameters:
+    * `client_id` - Client ID
+    * `client_secret` - Client secret
+    * `grant_type` - Should always be "password"
+    * `email` - The e-mail address of the user account the API will function on behalf of
+    * `password` - The password of the user account the API will function on behalf of
+    
+    Example POST URL: http://YOUR-COMPANY-PORTAL.ourthreads.com/oauth/token?client_id=de65bb7b6f420d9caf5305ca342f71c95f516bb7459aaa4e7bab969bdce59cf5&client_secret=fd63d92e98fadba9914e3f89212cf5d1d574c0f9f861bd9c9a2ef796fd281757&grant_type=password&email=chris%2Brevolution%40threadsculture.com&password=abcd1234
+    
+    Once a token is retrieved, it should be placed in the HTTP `Bearer` header of every HTTP request like:
+    
+    `Bearer 7dd917ca6702e8cdf6e66892afad723ec85b8e3fe6104bcb2d53bf64f4a76680`
+    
+    Tokens expire after 2 hours and need to be refreshed.
+    
+    
+  x-logo:
+    url: http://www.threadsculture.com/content/uploads/2016/09/threads_logo_small.png
+basePath: /api/v1
+host: YOUR-COMPANY-PORTAL.ourthreads.com
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  oauth:
+    type: oauth2
+    flow: password
+    tokenUrl: "/oauth/token"
+    scopes: {
+      "basic": "Modify your company and users"
+    }
+paths:
+  /users:
+    get:
+      summary: List all users for your company
+      security:
+        - oauth:
+          - basic
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UserResponse'
+    post:
+      summary: Create new user for your company
+      description: |
+        If `position` and `department` are supplied, this will create a new job position (and new department if necessary)
+        and assign the created user to the job.
+
+        If `supervisor_email` is supplied and is a valid manager e-mail for your comapny, the job assigned to this user
+        will report to this supervisor. Must also supply the `position` and `department` parameters to succeed.
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: body
+          name: body
+          description: User object
+          required: false
+          schema:
+            $ref: "#/definitions/UserCreateRequest"
+      responses:
+        '201':
+          description: User created
+        '400':
+          description: Invalid user supplied
+        '422':
+          description: Required parameter missing
+  '/users/{user_id}':
+    get:
+      summary: Get a specific user by user ID
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: path
+          name: user_id
+          description: The user ID associated with the user to display
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/UserResponse'
+        '404':
+          description: User not found
+    put:
+      summary: Update a user
+      description: Update user information
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: path
+          name: user_id
+          description: The user ID to update
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: User information to update
+          required: false
+          schema:
+            $ref: "#/definitions/UserUpdateRequest"
+      responses:
+        '200':
+          description: User updated
+          schema:
+            $ref: '#/definitions/UserResponse'
+        '400':
+          description: Invalid user supplied
+        '422':
+          description: Required parameter missing
+  '/users/{user_id}/position':
+    post:
+      summary: Assign new position to user
+      description: |
+        Create new position for user and assign them to it. Fails if the user is already assigned to a position.
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: path
+          name: user_id
+          description: The user ID to update
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Position to create
+          required: false
+          schema:
+            $ref: "#/definitions/PositionRequest"
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/UserResponse'
+        '400':
+          description: Invalid user supplied
+        '422':
+          description: Required parameter missing
+    delete:
+      summary: Unassign user from position
+      description: Remove user from their org. chart position
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: path
+          name: user_id
+          description: The user ID to update
+          required: true
+          type: string
+        - name: termination_date
+          description: |
+            Optional. ISO8601 formatted date of users termination. Only provide if user is no longer with your company.
+          in: query
+          type: string
+      responses:
+        '200':
+          description: Successfully unassigned position
+          schema:
+            $ref: '#/definitions/UserResponse'
+definitions:
+  UserCreateRequest:
+    type: object
+    required: ["first_name","last_name","email","role","password_digest"]
+    properties:
+      first_name:
+        type: string
+        description: First name of user
+      last_name:
+        type: string
+        description: Last name of user
+      email:
+        type: string
+        description: E-mail address of user
+      role:
+        $ref: '#/definitions/Role'
+      password_digest:
+        type: string
+        description: Password to use as the user's password 
+      position:
+        type: string
+        description: Job title of position
+      department:
+        type: string
+        description: Department the position is under
+      supervisor_email:
+        type: string
+        description: |
+          E-mail of the manager this person reports to. This manager must alreayd be in the system and be at least a manager or admin role. If this property is supplied, position and department must also be supplied. The position created will automatically be assigned to this supervisor as an employee.
+      phone_number:
+        type: string
+        description: Phone number 
+      phone_number_ext:
+        type: string
+        description: Phone number extension
+      hire_date:
+        type: string
+        description: ISO8601 formatted date string
+  UserUpdateRequest:
+    type: object
+    properties:
+      first_name:
+        type: string
+        description: First name of user
+      last_name:
+        type: string
+        description: Last name of user
+      email:
+        type: string
+        description: E-mail address of user
+      role:
+        $ref: '#/definitions/Role'
+      phone_number:
+        type: string
+        description: Phone number 
+      phone_number_ext:
+        type: string
+        description: Phone number extension
+      hire_date:
+        type: string
+        description: ISO8601 formatted date string  
+  UserResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      first_name:
+        type: string
+      last_name:
+        type: string
+      email:
+        type: string
+      role:
+        $ref: '#/definitions/Role'
+      position:
+        type: string
+      department:
+        type: string
+  PositionRequest:
+    type: object
+    required: ["job_title","department"]
+    properties:
+      job_title:
+        type: string
+      department:
+        type: string
+      supervisor_email:
+        type: string
+        description: |
+          E-mail of the manager this person reports to. This manager must alreayd be in the system and be at least a manager or admin role. The position created will automatically be assigned to this supervisor as an employee.
+  Role:
+    type: string
+    default: employee
+    enum:
+     - hr
+     - manager
+     - employee

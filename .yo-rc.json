@@ -1,0 +1,12 @@
+{
+  "generator-openapi-repo": {
+    "importExistingSpec": true,
+    "importedSpec": "swagger.yml",
+    "name": "Threads",
+    "redocVersion": "v1.x.x",
+    "repo": "ThreadsCulture/REST-API",
+    "splitSpec": false,
+    "samples": true,
+    "installSwaggerUI": true
+  }
+}
