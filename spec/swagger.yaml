@@ -11,6 +11,8 @@ info:
     
     For bug reports and feature requests, please use our github repo issue tracker at: https://github.com/ThreadsCulture/REST-API/issues
     
+    
+    
     # OAuth Authentication
     API Authentication is done via an OAuth token. To retrieve an oauth token, send an HTTP `POST` request to `https://YOUR-COMPANY-PORTAL.ourthreads.com/oauth/token`
     
@@ -23,7 +25,18 @@ info:
     
     [Fully constructed sample URL](https://YOUR-COMPANY-PORTAL.ourthreads.com/oauth/token?client_id=de65bb7b6f420d9caf5305ca342f71c95f516bb7459aaa4e7bab969bdce59cf5&client_secret=fd63d92e98fadba9914e3f89212cf5d1d574c0f9f861bd9c9a2ef796fd281757&grant_type=password&email=example%40threadsculture.com&password=abcd1234)
     
-    Once a token is retrieved, it should be placed in the HTTP `Bearer` header of every HTTP request like:
+    If successfully authenticated, you will receive the following JSON response body:
+    
+    ```
+    {
+    	"access_token": "f49648148cc056fd2a585b102ab9e7ab327cb0c89c204af4b42cf5d57b881e72",
+    	"token_type": "bearer",
+    	"expires_in": 7200,
+    	"created_at": 1475085093
+    }
+    ```
+    
+    Once a token is retrieved, it should be placed in the HTTP `Bearer` header of every HTTP request:
     
     `Bearer 7dd917ca6702e8cdf6e66892afad723ec85b8e3fe6104bcb2d53bf64f4a76680`
     
