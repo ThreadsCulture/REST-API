@@ -63,6 +63,8 @@ tags:
     description: Manage creation and removal of users
   - name: positions
     description: Manage job positions and assignments
+  - name: reviews
+    description: Manage reviews for employees
 paths:
   /users:
     get:
@@ -211,6 +213,34 @@ paths:
           description: Successfully unassigned position
           schema:
             $ref: '#/definitions/UserResponse'
+  /reviews:
+    post:
+      summary: Create reviews for users
+      tags:
+        - reviews
+      description: Create reviews for the specified users
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - name: user_ids
+          description: Array of user ID's to create the review on behalf of
+          in: query
+          type: array
+          items: {
+            type: integer
+          }
+        - name: date
+          description: | 
+            ISO8601 formatted date string  that the review should take place
+          in: query
+          type: string
+      responses:
+        '200':
+          description: Successfully created review
+          schema:
+            $ref: '#/definitions/ReviewCreateResponse'
+          
 definitions:
   UserCreateRequest:
     type: object
@@ -272,6 +302,16 @@ definitions:
       hire_date:
         type: string
         description: ISO8601 formatted date string  
+  ReviewCreateResponse:        
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      date:
+        type: string
   UserResponse:
     type: object
     properties:
