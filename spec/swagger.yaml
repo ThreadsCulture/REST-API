@@ -69,7 +69,6 @@ paths:
   /users:
     get:
       summary: List all users for your company
-      operationId: listUsers
       tags:
         - users
       security:
@@ -84,7 +83,6 @@ paths:
               $ref: '#/definitions/UserResponse'
     post:
       summary: Create new user for your company
-      operationId: createUser
       tags:
         - users
       description: |
@@ -113,7 +111,6 @@ paths:
   '/users/{user_id}':
     get:
       summary: Get a specific user by user ID
-      operationId: getUser
       tags:
         - users
       security:
@@ -165,7 +162,6 @@ paths:
   '/users/{user_id}/position':
     post:
       summary: Assign new position to user
-      operationId: assignPosition
       tags:
         - positions
       description: |
@@ -222,7 +218,6 @@ paths:
   /reviews:
     post:
       summary: Create reviews for users
-      operationId: createReviews
       tags:
         - reviews
       description: Create reviews for the specified users
@@ -230,28 +225,19 @@ paths:
         - oauth:
           - basic
       parameters:
-        - name: user_ids
-          description: Array of user ID's to create the review on behalf of
-          in: query
-          type: array
-          items: {
-            type: integer
-          }
-        - name: date
-          description: | 
-            ISO8601 formatted date string  that the review should take place
-          in: query
-          type: string
-        - name: name
-          description: Name of the review
-          in: query
-          type: string
+        - in: body
+          name: body
+          description: Reviews to create
+          required: false
+          schema:
+            $ref: "#/definitions/ReviewCreateRequest"        
       responses:
         '200':
           description: Successfully created review
           schema:
             $ref: '#/definitions/ReviewCreateResponse'
           
+        
 definitions:
   UserCreateRequest:
     type: object
@@ -340,6 +326,22 @@ definitions:
       position:
         type: string
       department:
+        type: string
+  ReviewCreateRequest:
+    type: object
+    properties:
+      user_ids:
+        description: Array of user ID's to create the review on behalf of
+        type: array
+        items: {
+          type: integer
+        }
+      date:
+        description: | 
+          ISO8601 formatted date string  that the review should take place
+        type: string
+      name:
+        description: Name of the review
         type: string
   PositionRequest:
     type: object
