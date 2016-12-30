@@ -329,6 +329,7 @@ definitions:
         type: string
   ReviewCreateRequest:
     type: object
+    required: ["date","name"]
     properties:
       user_ids:
         description: Array of user ID's to create the review on behalf of
