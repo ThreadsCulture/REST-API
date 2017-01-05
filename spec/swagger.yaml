@@ -215,6 +215,28 @@ paths:
           description: Successfully unassigned position
           schema:
             $ref: '#/definitions/UserResponse'
+  /users/welcome:
+    post:
+      summary: Send welcome emails
+      tags:
+        - users
+      description: |
+        Send a welcome email to users containing a link to login to Threads.
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: body
+          name: body
+          description: User IDs to send the welcome e-mail to
+          required: true
+          schema:
+            $ref: "#/definitions/SendWelcomeRequest"        
+      responses:
+        '200':
+          description: Successfully created review
+          schema:
+            $ref: '#/definitions/SendWelcomeResponse'
   /reviews:
     post:
       summary: Create reviews for users
@@ -297,11 +319,21 @@ definitions:
       hire_date:
         type: string
         description: ISO8601 formatted date string  
+  SendWelcomeResponse:        
+    type: object
+    properties:
+      results:
+        $ref: '#/definitions/BatchResult'
+      errors:
+        type: array
+        items: {
+          type: string
+        }        
   ReviewCreateResponse:        
     type: object
     properties:
       results:
-        $ref: '#/definitions/BatchCreateResult'
+        $ref: '#/definitions/BatchResult'
       errors:
         type: array
         items: {
@@ -325,9 +357,19 @@ definitions:
         type: string
       department:
         type: string
+  SendWelcomeRequest:
+    type: object
+    required: ["user_ids"]
+    properties:
+      user_ids:
+        description: Array of user ID's to create the review on behalf of
+        type: array
+        items: {
+          type: integer
+        }        
   ReviewCreateRequest:
     type: object
-    required: ["date","name"]
+    required: ["user_ids", "date","name"]
     properties:
       user_ids:
         description: Array of user ID's to create the review on behalf of
@@ -356,7 +398,7 @@ definitions:
         type: string
         description: |
           E-mail of the manager this person reports to. This manager must already be in the system and be at least a manager or admin role. The position created will automatically be assigned to this supervisor as an employee.
-  BatchCreateResult:
+  BatchResult:
     type: object
     properties:
       created:
