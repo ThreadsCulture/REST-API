@@ -56,11 +56,11 @@ securityDefinitions:
     flow: password
     tokenUrl: "/oauth/token"
     scopes: {
-      "basic": "Modify your company and users"
+      "basic": "Modify your company and employees"
     }
 tags:
-  - name: users
-    description: Manage creation and removal of users
+  - name: employees
+    description: Manage creation and removal of employees
   - name: positions
     description: Manage job positions and assignments
   - name: reviews
@@ -68,9 +68,9 @@ tags:
 paths:
   /users:
     get:
-      summary: List all users for your company
+      summary: List all employees for your company
       tags:
-        - users
+        - employees
       security:
         - oauth:
           - basic
@@ -80,7 +80,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/UserResponse'
+              $ref: '#/definitions/CollectionResponse'
     post:
       summary: Create new user for your company
       tags:
@@ -239,10 +239,10 @@ paths:
             $ref: '#/definitions/SendWelcomeResponse'
   /reviews:
     post:
-      summary: Create reviews for users
+      summary: Create reviews for employees
       tags:
         - reviews
-      description: Create reviews for the specified users
+      description: Create reviews for the specified employee
       security:
         - oauth:
           - basic
@@ -339,6 +339,23 @@ definitions:
         items: {
           type: string
         }
+  CollectionResponse:
+    type: object
+    properties:
+      link:
+        type: object
+      per_page:
+        type: integer
+      page: 
+        type: integer
+      results:
+        type: array
+        items: {
+          type: object,
+          description: Row properties of results
+        }
+      total:
+        type: integer
   UserResponse:
     type: object
     properties:
