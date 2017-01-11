@@ -59,21 +59,46 @@ securityDefinitions:
       "basic": "Modify your company and employees"
     }
 tags:
-  - name: employees
+  - name: users
     description: Manage creation and removal of employees
   - name: positions
     description: Manage job positions and assignments
   - name: reviews
     description: Manage reviews for employees
+  - name: departments
+    description: Manage the departments within your company
+  - name: job descriptions
+    description: Manage the jobs available for your company
 paths:
   /users:
     get:
-      summary: List all employees for your company
+      summary: List company employees
       tags:
-        - employees
+        - users
       security:
         - oauth:
           - basic
+      parameters:
+        - name: by_status
+          in: query
+          description: | 
+            Filter by status of employee
+            * `Current Employee` - Employees that have an assigned position
+            * `Inactive Employee` - Employees that do not have an assigned position
+            * `Former Employee` - Employees that are terminated
+          type: string
+          enum: ['Current Employee','Inactive Employee','Former Employee']
+          default: Current Employee
+        - name: by_role
+          in: query
+          description: | 
+            Filter by user role. hr (admin), manager, or employee 
+          type: string
+          enum: ['hr','manager','employee']
+        - name: search_query
+          in: query
+          description: Filter by keyword search against the users names
+          type: string
       responses:
         '200':
           description: Successful response
@@ -258,6 +283,58 @@ paths:
           description: Successfully created review
           schema:
             $ref: '#/definitions/ReviewCreateResponse'
+  /departments:
+    get:
+      summary: List departments in your company
+      tags:
+        - departments
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - name: search_query
+          in: query
+          description: Filter by keyword search against the department name and description
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CollectionResponse'
+  /job_descriptions:
+    get:
+      summary: List job descriptions for your company
+      tags:
+        - job descriptions
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - name: search_query
+          in: query
+          description: Filter by keyword search against the job name and description
+          type: string
+        - name: by_status
+          in: query
+          description: | 
+            Filter by active or former job descriptions
+          type: string
+          default: active
+          enum: ['active','former']
+        - name: by_department
+          in: query
+          description: | 
+            Filter by department ID
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CollectionResponse'               
 definitions:
   UserCreateRequest:
     type: object
@@ -344,10 +421,15 @@ definitions:
     properties:
       link:
         type: object
+        description: Pagination links, if any are available
       per_page:
         type: integer
+        description: The number of items to load at once. 
+        default: 25
       page: 
         type: integer
+        default: 1
+        description: The page that is currently being displayed
       results:
         type: array
         items: {
@@ -356,6 +438,7 @@ definitions:
         }
       total:
         type: integer
+        description: Total number of results 
   UserResponse:
     type: object
     properties:
