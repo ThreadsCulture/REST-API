@@ -230,9 +230,18 @@ paths:
           description: The user ID to update
           required: true
           type: string
+        - name: vacate_position
+          in: query
+          type: boolean
+          description: | 
+            Vacate this position and leave it available instead of the default behavior of removing the position
+        - name: terminate
+          in: query
+          type: boolean
+          description: Mark this employee as terminated
         - name: termination_date
           description: |
-            Optional. ISO8601 formatted date of users termination. Only provide if user is no longer with your company.
+            Optional. ISO8601 formatted date of users termination. Only provide if user is no longer with your company. Terminate must be set to true for this to take effect.
           in: query
           type: string
       responses:
