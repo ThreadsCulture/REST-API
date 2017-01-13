@@ -151,7 +151,7 @@ paths:
         '200':
           description: Successful response
           schema:
-            $ref: '#/definitions/UserResponse'
+            $ref: '#/definitions/UserShowResponse'
         '404':
           description: User not found
     put:
@@ -179,7 +179,7 @@ paths:
         '200':
           description: User updated
           schema:
-            $ref: '#/definitions/UserShowResponse'
+            $ref: '#/definitions/UserResponse'
         '400':
           description: Invalid user supplied
         '422':
