@@ -179,7 +179,7 @@ paths:
         '200':
           description: User updated
           schema:
-            $ref: '#/definitions/UserResponse'
+            $ref: '#/definitions/UserShowResponse'
         '400':
           description: Invalid user supplied
         '422':
@@ -466,6 +466,15 @@ definitions:
         type: string
       department:
         type: string
+  UserShowResponse:
+    allOf:
+      - $ref: '#/definitions/UserResponse'
+      - properties:
+          next_review_name_suggestion:
+            type: string
+          next_review_date_suggestion:
+            type: string
+            format: date        
   SendWelcomeRequest:
     type: object
     required: ["user_ids"]
