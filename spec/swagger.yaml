@@ -284,7 +284,7 @@ paths:
         - in: body
           name: body
           description: Reviews to create
-          required: false
+          required: true
           schema:
             $ref: "#/definitions/ReviewCreateRequest"        
       responses:
@@ -292,6 +292,26 @@ paths:
           description: Successfully created review
           schema:
             $ref: '#/definitions/ReviewCreateResponse'
+    put:
+      summary: Update reviews
+      tags:
+        - reviews
+      description: Update selected reviews
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: body
+          name: body
+          description: Reviews to update
+          required: true
+          schema: 
+            $ref: "#/definitions/ReviewUpdateRequest"
+      responses:
+        '200':
+          description: Successfully updated reviews
+          schema:
+            $ref: '#/definitions/ReviewUpdateResponse'
   /departments:
     get:
       summary: List departments in your company
@@ -425,6 +445,16 @@ definitions:
         items: {
           type: string
         }
+  ReviewUpdateResponse:        
+    type: object
+    properties:
+      results:
+        $ref: '#/definitions/BatchResult'
+      errors:
+        type: array
+        items: {
+          type: string
+        }        
   CollectionResponse:
     type: object
     properties:
@@ -501,6 +531,29 @@ definitions:
         type: string
       name:
         description: Name of the review
+        type: string
+  ReviewUpdateRequest:
+    type: object
+    required: ["review_ids"]
+    properties:
+      review_ids:
+        description: Array of review ID's to create the review on behalf of
+        type: array
+        items: {
+          type: integer
+        }
+      date:
+        description: | 
+          ISO8601 formatted date string that the review should take place
+        type: string
+      name:
+        description: Name of the review
+        type: string     
+      next_review_name:
+        description: Name of the next review
+        type: string         
+      next_review_date:
+        description: ISO8601 formatted date string of the next review date
         type: string
   PositionRequest:
     type: object
