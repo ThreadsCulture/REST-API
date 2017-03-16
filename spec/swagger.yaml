@@ -517,7 +517,7 @@ definitions:
         }        
   ReviewCreateRequest:
     type: object
-    required: ["user_ids", "date","name"]
+    required: ["user_ids"]
     properties:
       user_ids:
         description: Array of user ID's to create the review on behalf of
@@ -527,10 +527,11 @@ definitions:
         }
       date:
         description: | 
-          ISO8601 formatted date string  that the review should take place
+          ISO8601 formatted date string that the review should take place. If the date is not provided, the system will automatically generate one based on company review cycle settings.
         type: string
       name:
-        description: Name of the review
+        description: |
+          Name of the review. If the name is not provided, the system will automatically generate one based on the company review cycle settings and the review date that is set. Example: 2014 Q3 Review
         type: string
   ReviewUpdateRequest:
     type: object
