@@ -61,14 +61,14 @@ securityDefinitions:
 tags:
   - name: users
     description: Manage creation and removal of employees
-  - name: positions
-    description: Manage job positions and assignments
   - name: reviews
     description: Manage reviews for employees
   - name: departments
     description: Manage the departments within your company
   - name: job descriptions
     description: Manage the jobs available for your company
+  - name: org chart
+    description: Manage positions on your company's org. chart
 paths:
   /users:
     get:
@@ -188,7 +188,7 @@ paths:
     post:
       summary: Assign new position to user
       tags:
-        - positions
+        - users
       description: |
         Create new position for user and assign them to it. Fails if the user is already assigned to a position.
       security:
@@ -219,7 +219,7 @@ paths:
       summary: Unassign user from position
       operationId: unassignPosition
       tags:
-        - positions
+        - users
       description: Remove user from their org. chart position
       security:
         - oauth:
@@ -363,7 +363,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/CollectionResponse'               
+              $ref: '#/definitions/CollectionResponse'
 definitions:
   UserCreateRequest:
     type: object
@@ -562,10 +562,13 @@ definitions:
     properties:
       position:
         type: string
-        description: The job title for this position
+        description: The job title for this position. Required if position instance ID is not provided. If this job title does not exist in the system, a new job description will be created. 
       department:
         type: string
-        description: The department that this job is a part of. If this matches an existing department
+        description: The department that this job is a part of. If this matches an existing department, the department will be used, otherwise a new department will be created.  Required if position instance ID is not provided.
+      position_instance_id:
+        type: integer
+        description: The existing position to fill. Must be provided unless position and department are provided. 
       supervisor_email:
         type: string
         description: |
