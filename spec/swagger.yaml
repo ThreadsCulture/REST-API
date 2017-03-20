@@ -364,6 +364,45 @@ paths:
             type: array
             items:
               $ref: '#/definitions/CollectionResponse'
+  /org_chart:
+    get:
+      summary: Get your company's org. chart
+      description: Get your company's org. chart as a tree of nested position objects
+      tags:
+        - org chart
+      security:
+        - oauth:
+          - basic
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/OrgChartTreeResponse'
+  '/org_chart/{position_instance_id}':
+    get:
+      summary: Get org. chart position
+      description: Get information about specific position on the org. chart
+      tags:
+        - org chart
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: path
+          name: position_instance_id
+          description: The ID of the position on the org. chart to retrieve
+          required: true
+          type: string
+        - name: show_reports
+          in: query
+          description: Show the positions of anyone who reports to this user. 'all' will send display all reports recursively, 'direct' will only show the immediate descending reports.
+          type: string
+          enum: ['all','direct']
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/PositionInstanceResponse'
 definitions:
   UserCreateRequest:
     type: object
@@ -496,6 +535,55 @@ definitions:
         type: string
       department:
         type: string
+  PositionInstanceResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      job_title:
+        type: string
+      department:
+        type: string
+      name:
+        type: string
+        description: Name of employee. This property will not exist if this job is vacant.
+      user_id:
+        type: integer
+        format: int64
+        description: User ID of employee. Will be null if this job is vacant. 
+      supervisor:
+        type: string
+      supervisor_id:
+        type: string
+      reports:
+        description: Array of employees reporting to this person
+        type: array
+        items: {
+          $ref: '#/definitions/OrgChartTreeResponse'
+        }
+  OrgChartTreeResponse:
+    type: object
+    properties:
+      id: 
+        type: integer
+        format: int64
+      name:
+        type: string
+        description: Name of employee
+      department:
+        type: string
+      user_id:
+        type: integer
+        format: int64
+      job_title:
+        type: string
+      reports:
+        description: Array of employees reporting to this person
+        type: array
+        items: {
+          $ref: '#/definitions/OrgChartTreeResponse'
+        }
   UserShowResponse:
     allOf:
       - $ref: '#/definitions/UserResponse'
