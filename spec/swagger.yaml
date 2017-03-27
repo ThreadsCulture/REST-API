@@ -220,7 +220,7 @@ paths:
       operationId: unassignPosition
       tags:
         - users
-      description: Remove user from their org. chart position
+      description: Remove user from their org. chart position. The position will be left as a vacant position on the org. chart.
       security:
         - oauth:
           - basic
@@ -230,11 +230,6 @@ paths:
           description: The user ID to update
           required: true
           type: string
-        - name: vacate_position
-          in: query
-          type: boolean
-          description: | 
-            Vacate this position and leave it available instead of the default behavior of removing the position
         - name: terminate
           in: query
           type: boolean
