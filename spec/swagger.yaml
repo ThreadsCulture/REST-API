@@ -69,6 +69,8 @@ tags:
     description: Manage the jobs available for your company
   - name: org chart
     description: Manage positions on your company's org. chart
+  - name: comments
+    description: Manage feedback left for employees
 paths:
   /users:
     get:
@@ -398,6 +400,36 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/PositionInstanceResponse'
+  '/comments/{comment_id}':
+    put:
+      summary: Update a comment
+      description: Update a comment
+      tags:
+        - comments
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: path
+          name: comment_id
+          description: The comment ID to update
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Comment data to update
+          required: false
+          schema:
+            $ref: "#/definitions/CommentUpdateRequest"
+      responses:
+        '200':
+          description: User updated
+          schema:
+            $ref: '#/definitions/UserResponse'
+        '400':
+          description: Invalid user supplied
+        '422':
+          description: Required parameter missing
 definitions:
   UserCreateRequest:
     type: object
@@ -459,6 +491,15 @@ definitions:
       hire_date:
         type: string
         description: ISO8601 formatted date string  
+  CommentUpdateRequest:
+    type: object
+    properties:
+      content:
+        type: string
+        description: Content of the feedback
+      deleted:
+        type: boolean
+        description: Indicate whether the comment is deleted or not
   SendWelcomeResponse:        
     type: object
     properties:
