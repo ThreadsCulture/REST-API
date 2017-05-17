@@ -423,11 +423,11 @@ paths:
             $ref: "#/definitions/CommentUpdateRequest"
       responses:
         '200':
-          description: User updated
+          description: Comment updated
           schema:
             $ref: '#/definitions/UserResponse'
         '400':
-          description: Invalid user supplied
+          description: Invalid comment supplied
         '422':
           description: Required parameter missing
 definitions:
@@ -500,6 +500,11 @@ definitions:
       deleted:
         type: boolean
         description: Indicate whether the comment is deleted or not
+      attachment:
+        $ref: '#/definitions/FileUpload'
+      delete_attachment:
+        type: boolean
+        description: Delete the existing attachment from the comment. If a new attachment is being uploaded to overwrite the existing one, this field should be set to true or the new attachment will not be used.
   SendWelcomeResponse:        
     type: object
     properties:
@@ -656,6 +661,19 @@ definitions:
       name:
         description: |
           Name of the review. If the name is not provided, the system will automatically generate one based on the company review cycle settings and the review date that is set. Example: 2014 Q3 Review
+        type: string
+  FileUpload:
+    type: object
+    required: ["data", "name", "type"]
+    properties:
+      data:
+        description: Base 64 encoded string representation of file's data 
+        type: string
+      name:
+        description: Name of the file
+        type: string
+      type:
+        description: Mime type of file
         type: string
   ReviewUpdateRequest:
     type: object
