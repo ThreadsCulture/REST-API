@@ -536,7 +536,7 @@ definitions:
       content:
         type: string
         description: Content of the feedback
-      user_ids:
+      recipient_ids:
         description: Array of user ID's to create the review on behalf of. Add the string value \'self\' to this array to create a comment for the user that is authenticated via the API. 
         type: array
         items: {
