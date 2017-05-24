@@ -400,6 +400,31 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/PositionInstanceResponse'
+  '/comments':
+    post:
+      summary: Create comment
+      description: Create a comment for one or more recipients
+      tags:
+        - comments
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: body
+          name: body
+          description: Comment data to update
+          required: false
+          schema:
+            $ref: "#/definitions/CommentCreateRequest"
+      responses:
+        '200':
+          description: Comment updated
+          schema:
+            $ref: '#/definitions/BatchResult'
+        '400':
+          description: Invalid comment supplied
+        '422':
+          description: Required parameter missing
   '/comments/{comment_id}':
     put:
       summary: Update a comment
@@ -425,7 +450,7 @@ paths:
         '200':
           description: Comment updated
           schema:
-            $ref: '#/definitions/UserResponse'
+            $ref: '#/definitions/BatchResult'
         '400':
           description: Invalid comment supplied
         '422':
@@ -505,6 +530,20 @@ definitions:
       delete_attachment:
         type: boolean
         description: Delete the existing attachment from the comment. If a new attachment is being uploaded to overwrite the existing one, this field should be set to true or the new attachment will not be used.
+  CommentCreateRequest:
+    type: object
+    properties:
+      content:
+        type: string
+        description: Content of the feedback
+      user_ids:
+        description: Array of user ID's to create the review on behalf of. Add the string value \'self\' to this array to create a comment for the user that is authenticated via the API. 
+        type: array
+        items: {
+          type: integer
+        }
+      attachment:
+        $ref: '#/definitions/FileUpload'
   SendWelcomeResponse:        
     type: object
     properties:
