@@ -137,7 +137,7 @@ paths:
           description: Required parameter missing
   '/users/{user_id}':
     get:
-      summary: Get a specific user by user ID
+      summary: Get a specific user by user ID. Use 'me' as the user_id to show information about the currently authenticated user. 
       tags:
         - users
       security:
@@ -672,7 +672,13 @@ definitions:
             type: string
           next_review_date_suggestion:
             type: string
-            format: date        
+            format: date
+          feedback_received:
+            type: integer
+          feedback_self:
+            type: integer
+          feedback_given:
+            type: integer
   SendWelcomeRequest:
     type: object
     required: ["user_ids"]
