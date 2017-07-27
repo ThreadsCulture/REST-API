@@ -71,6 +71,8 @@ tags:
     description: Manage positions on your company's org. chart
   - name: comments
     description: Manage feedback left for employees
+  - name: custom attributes
+    description: Manage custom attributes 
 paths:
   /users:
     get:
@@ -269,6 +271,120 @@ paths:
           description: Successfully created review
           schema:
             $ref: '#/definitions/SendWelcomeResponse'
+  '/custom_attributes/{attribute_type}/{attribute_id}':
+    post:
+      summary: 'Set custom attribute for object'
+      tags:
+       - custom attributes
+      description: |
+        Set a custom attribute associated with a user (or object). Valid object types are 'User' or 'Company'. The authenticated API user must have the ability to manage any object passed to this route in order to set a custom attribute to it. 
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: path
+          name: attribute_type
+          description: The type of object to associate the custom attribute to
+          required: true
+          type: string
+        - in: path
+          name: attribute_id
+          description: The ID of object to associate the custom attribute to
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Reviews to create
+          required: true
+          schema:
+            $ref: "#/definitions/CustomAttributeRequest"
+      responses:
+        '200':
+          description: Successfully created custom attribute
+          schema:
+            $ref: '#/definitions/CustomAttributeResponse'
+    get:
+      summary: 'List custom attributes for object'
+      tags:
+        - custom attributes
+      description: |
+        List custom attributes associated with object
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: path
+          name: attribute_type
+          description: The type of object to associate the custom attribute to
+          required: true
+          type: string
+        - in: path
+          name: attribute_id
+          description: The ID of object to associate the custom attribute to
+          required: true
+          type: string
+        - in: query
+          name: key
+          description: Key to filter custom attributes by
+          type: string
+        - in: query
+          name: search_query
+          description: Search for custom attribute by key
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CollectionResponse'
+  /custom_attributes:
+    post:
+      summary: 'Set custom attribute for user'
+      tags:
+       - custom attributes
+      description: |
+        Set a custom attribute for the currently authenticated user
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: body
+          name: body
+          description: Reviews to create
+          required: true
+          schema:
+            $ref: "#/definitions/CustomAttributeRequest"
+      responses:
+        '200':
+          description: Successfully created custom attribute
+          schema:
+            $ref: '#/definitions/CustomAttributeResponse'
+    get:
+      summary: 'List custom attributes for user'
+      tags:
+        - custom attributes
+      description: |
+        List custom attributes associated with the currently authenticated user
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: query
+          name: key
+          description: Key to filter custom attributes by
+          type: string
+        - in: query
+          name: search_query
+          description: Search for custom attribute by key
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CollectionResponse'
   /reviews:
     post:
       summary: Create reviews for employees
@@ -351,7 +467,6 @@ paths:
             $ref: '#/definitions/DepartmentResponse'
         '404':
           description: User not found
-        
   /job_descriptions:
     get:
       summary: List job descriptions for your company
@@ -657,6 +772,25 @@ definitions:
       filled_positions:
         type: integer
         description: Number of occupied job positions in this department
+  CustomAttributeResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      attributable_type:
+        type: string
+        description: The type of object this custom attribute is associated with
+      attributable_id:
+        type: integer
+        format: int64
+        description: Type ID of the object this custom attribute is associated with
+      key:
+        type: string
+        description: The reference key for this custom attribute
+      value:
+        type: string
+        description: The value of the custom attribute
   PositionInstanceResponse:
     type: object
     properties:
@@ -748,6 +882,16 @@ definitions:
       name:
         description: |
           Name of the review. If the name is not provided, the system will automatically generate one based on the company review cycle settings and the review date that is set. Example: 2014 Q3 Review
+        type: string
+  CustomAttributeRequest:
+    type: object
+    required: ["key", "value"]
+    properties:
+      key:
+        description: Key to reference the custom attribute by
+        type: string
+      value:
+        description: Value of the custom attribute
         type: string
   FileUpload:
     type: object
