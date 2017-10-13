@@ -680,6 +680,9 @@ definitions:
         items: {
           type: integer
         }
+      visible_to_recipient:
+        type: boolean
+        description: Whether or not this comment will be visible to the recipient
       attachment:
         $ref: '#/definitions/FileUpload'
   SendWelcomeResponse:        
