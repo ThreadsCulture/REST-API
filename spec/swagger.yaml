@@ -756,6 +756,18 @@ definitions:
         type: string
       department:
         type: string
+      supervisor: 
+        type: string
+      supervisor_id:
+        type: integer
+      allow_recipient_visible_feedback:
+        type: string
+        description: | 
+          Determines whether or not feedback can (or will be) made visible to this person. "Always" means feedback will always be visible to this recipient, "optional" means feedback can optionally be made visible to this recipient, and "off" means feedback can never be made visible to this recipient. 
+        enum: 
+         - always
+         - optional
+         - off
   DepartmentResponse:
     type: object
     properties:
