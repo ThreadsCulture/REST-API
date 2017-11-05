@@ -34,9 +34,9 @@ info:
     }
     ```
     
-    Once a token is retrieved, it should be placed in the HTTP `Bearer` header of every HTTP request:
+    Once a token is retrieved, it should be placed in the HTTP `Authorization` header prefixed by the word 'Bearer' of every HTTP request:
     
-    `Bearer 7dd917ca6702e8cdf6e66892afad723ec85b8e3fe6104bcb2d53bf64f4a76680`
+    `Authorization: Bearer 7dd917ca6702e8cdf6e66892afad723ec85b8e3fe6104bcb2d53bf64f4a76680`
     
     Tokens expire after 2 hours.
     
