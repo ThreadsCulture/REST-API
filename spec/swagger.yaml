@@ -21,7 +21,11 @@ info:
     * `email` - The e-mail address of the user account the API will function on behalf of
     * `password` - The password of the user account the API will function on behalf of
     
-    Note that these parameters should be sent in the query string of the request, not as POST data. See the following URL for an example:
+    Note that these parameters should be sent in the query string of the request, not as POST data. cURL example:
+    
+    ```
+    curl 'https://YOUR-COMPANY-PORTAL.ourthreads.com/oauth/token?client_id=de65bb7b6f420d9caf5305ca342f71c95f516bb7459aaa4e7bab969bdce59cf5&client_secret=fd63d92e98fadba9914e3f89212cf5d1d574c0f9f861bd9c9a2ef796fd281757&grant_type=password&email=example%40threadsculture.com&password=abcd1234' -X POST
+    ```
     
     [Fully constructed sample URL](https://YOUR-COMPANY-PORTAL.ourthreads.com/oauth/token?client_id=de65bb7b6f420d9caf5305ca342f71c95f516bb7459aaa4e7bab969bdce59cf5&client_secret=fd63d92e98fadba9914e3f89212cf5d1d574c0f9f861bd9c9a2ef796fd281757&grant_type=password&email=example%40threadsculture.com&password=abcd1234)
     
@@ -40,7 +44,13 @@ info:
     
     `Authorization: Bearer 7dd917ca6702e8cdf6e66892afad723ec85b8e3fe6104bcb2d53bf64f4a76680`
     
-    Tokens expire after 2 hours.
+    Example cURL request:
+    
+    ```
+    curl 'https://YOUR-COMPANY-PORTAL.ourthreads.com/api/v1/org_chart' -H 'authorization: Bearer 7dd917ca6702e8cdf6e66892afad723ec85b8e3fe6104bcb2d53bf64f4a76680' 
+    ```
+    
+    Tokens expire after 2 hours. 
     
   x-logo:
     url: http://www.threadsculture.com/content/uploads/2016/09/threads_logo_small.png
