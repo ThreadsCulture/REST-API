@@ -675,6 +675,9 @@ definitions:
       deleted:
         type: boolean
         description: Indicate whether the comment is deleted or not
+      visible_to_recipient:
+        type: boolean
+        description: Indicate whether this comment is visible to the recipient or not
       attachment:
         $ref: '#/definitions/FileUpload'
       delete_attachment:
