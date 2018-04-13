@@ -85,6 +85,11 @@ tags:
     description: Manage feedback left for employees
   - name: custom attributes
     description: Manage custom attributes 
+  - name: list filters
+    description: Manage list view filters
+  - name: data exports
+    description: Create and download exports 
+    
 paths:
   /users:
     get:
@@ -283,6 +288,106 @@ paths:
           description: Successfully created review
           schema:
             $ref: '#/definitions/SendWelcomeResponse'
+  '/exports/{export_id}':
+    get:
+      summary: 'Get details for a data export' 
+      tags:
+        - data exports
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: path
+          name: export_id
+          description: The export ID to load
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/DataExportResponse'
+        '404':
+          description: Export not found
+  '/filters':
+    get:
+      summary: 'Get list filter by model key'
+      description: Unlike other routes, in order to load a list filter you must provide a `model` key. This will load the most recent list filter for a given key made by the user authenticated for the request.
+      tags:
+        - list filters
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: query
+          name: model
+          description: The model key to load the most recent list filter for the authenticated user
+          required: true
+          type: string   
+      responses:
+        '200':
+          description: 'List filter object'
+          schema:
+            $ref: '#/definitions/ListFilterResponse'       
+  '/filters/selections':
+    get:
+      summary: 'Get list selections by model key'
+      description: This route gets the selected rows for the most recent list filter loaded by model key
+      tags: 
+        - list filters
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: query
+          name: model
+          description: The model key to load the most recent list filter for the authenticated user
+          required: true
+          type: string  
+      responses:
+        '200':
+          description: List of selected rows
+          schema:
+            $ref: '#/definitions/CollectionResponse'          
+  /exports:
+    post:
+      summary: 'Create a new data export'
+      tags:
+        - data exports
+      description: Create a new data export to process and run against a list filter
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: body
+          name: Data export to create
+          required: true
+          schema:
+            $ref: "#/definitions/DataExportRequest"
+      responses:
+        '200':
+          description: Successfully created custom attribute
+          schema:
+            $ref: '#/definitions/DataExportResponse'
+  '/exports/{export_id}/download':
+    get:
+      summary: 'Download a completed export'
+      tags:
+        - data exports
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: path
+          name: export_id
+          description: The export ID to download
+          required: true
+          type: string
+      responses:
+        '302':
+          description: Redirection to the temporarily generated URL to export download
+        '404':
+          description: Export not found            
   '/custom_attributes/{attribute_type}/{attribute_id}':
     post:
       summary: 'Set custom attribute for object'
@@ -802,6 +907,58 @@ definitions:
       filled_positions:
         type: integer
         description: Number of occupied job positions in this department
+  ListFilterResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      key:
+        type: string
+        description: 'String identifier (usually related to the type of list being loaded)
+      owner:
+        $ref: '#/definitions/UserResponse'
+      updated_at:
+        type: string
+        description: ISO8601 formatted date string of when the list filter was created
+      created_at:
+        type: string
+        description: ISO8601 formatted date string of when the list filter was last updated
+      filters:
+        type: object
+        additionalProperties: true
+  DataExportResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      list_filter_id:
+        type: integer
+        format: int64
+      updated_at:
+        type: string
+        description: ISO8601 formatted date string of when the export was created
+      created_at:
+        type: string
+        description: ISO8601 formatted date string of when the export was last updated
+      expires_at:
+        type: string
+        description: ISO8601 formatted date string of when the export will expire and no longer be available
+      download_url:
+        type: string
+        description: The URL to download the export (only present if the export is available)
+      status:
+        type: string
+        enum: ['Queued','Started','Completed','Failed','Expired']
+      export_format:
+        type: string
+        enum: ['csv','pdf','details.pdf']
+      export_file_name:
+        type: string
+      created_by:
+        $ref: '#/definitions/UserResponse'
+      
   CustomAttributeResponse:
     type: object
     properties:
@@ -913,6 +1070,23 @@ definitions:
         description: |
           Name of the review. If the name is not provided, the system will automatically generate one based on the company review cycle settings and the review date that is set. Example: 2014 Q3 Review
         type: string
+  DataExportRequest:
+    type: object
+    required: ["list_filter_id","export_format"]
+    properties:
+      list_filter_id:
+        description: The list filter ID to perform the export on
+        type: integer
+      export_format:
+        description: The format of the export
+        type: string
+        enum: ["csv","pdf","details.pdf"]
+      columns:
+        description: Array of columns to export (export_format must be "csv")
+        type: array
+        items: {
+          type: string
+        }
   CustomAttributeRequest:
     type: object
     required: ["key", "value"]
