@@ -83,6 +83,8 @@ tags:
     description: Manage positions on your company's org. chart
   - name: comments
     description: Manage feedback left for employees
+  - name: documents
+    description: Manage personnel and company documents
   - name: custom attributes
     description: Manage custom attributes 
   - name: list filters
@@ -503,6 +505,25 @@ paths:
             items:
               $ref: '#/definitions/CollectionResponse'
   /reviews:
+    get:
+      summary: List reviews
+      tags:
+        - reviews
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - name: search_query
+          in: query
+          description: Filter reviews by keyword search 
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CollectionResponse'
     post:
       summary: Create reviews for employees
       tags:
@@ -543,6 +564,84 @@ paths:
           description: Successfully updated reviews
           schema:
             $ref: '#/definitions/ReviewUpdateResponse'
+  /documents:
+    get:
+      summary: List documents
+      tags:
+        - documents
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - name: search_query
+          in: query
+          description: Filter documents by keyword search against document title and file name
+          type: string
+        - name: type
+          in: query
+          type: string
+          enum: ['company','personnel']
+          description: Filter only company documents or personnel documents
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CollectionResponse'
+    post:
+      summary: Upload a new document
+      tags:
+        - documents
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: body
+          name: body
+          description: Document to create
+          required: true
+          schema:
+            $ref: "#/definitions/DocumentCreateRequest"        
+      responses:
+        '200':
+          description: Successfully uploaded document
+          schema:
+            $ref: '#/definitions/DocumentShowResponse'
+  '/documents/{document_id}':
+    delete:
+      summary: Delete a document
+      tags:
+        - documents
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: path
+          name: document_id
+          description: The document ID to retrieve
+          required: true
+          type: string
+      responses:
+        '201':
+          description: Document deleted
+  '/documents/{document_id}/download':
+    get:
+      summary: Download a document
+      tags:
+        - documents
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: path
+          name: document_id
+          description: The document ID to retrieve
+          required: true
+          type: string
+      responses:
+        '302':
+          description: Redirected to download
   /departments:
     get:
       summary: List departments in your company
@@ -1027,6 +1126,29 @@ definitions:
         items: {
           $ref: '#/definitions/OrgChartTreeResponse'
         }
+  DocumentShowResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+        description: Name of document
+      person:
+        type: object
+        items: {
+          $ref: '#/definitions/UserResponse'
+        }
+      document:
+        type: string
+        description: Secure URL to directly download the document
+      effective_on:
+        type: string
+        description: ISO8601 formatted string for effective date
+      expires_on:
+        type: string
+        description: ISO8601 formatted string for expiration date
   UserShowResponse:
     allOf:
       - $ref: '#/definitions/UserResponse'
@@ -1042,6 +1164,9 @@ definitions:
             type: integer
           feedback_given:
             type: integer
+          nav:
+            type: object
+            description: Navigation items as an object tree (only appears if you are the user being requested)
   SendWelcomeRequest:
     type: object
     required: ["user_ids"]
@@ -1087,6 +1212,21 @@ definitions:
         items: {
           type: string
         }
+  DocumentCreateRequest:
+    type: object
+    required: ["name","document"]
+    properties:
+      name:
+        description: The name of the document
+        type: string
+      document:
+        $ref: '#/definitions/FileUpload'
+      effective_on: 
+        description: ISO8601 formatted date of when the document is effective on
+        type: string
+      expires_on:
+        description: ISO8601 formatted date of when the document is no longer in effect
+        type: string
   CustomAttributeRequest:
     type: object
     required: ["key", "value"]
