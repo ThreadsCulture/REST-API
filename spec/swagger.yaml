@@ -517,6 +517,24 @@ paths:
           in: query
           description: Filter reviews by keyword search 
           type: string
+        - name: results_only
+          in: query
+          description: Only return result data and no other list information
+          type: boolean
+        - name: columns
+          in: query
+          description: Used in conjunction with "results_only", this will only return the specific columns requested
+          type: array
+          items:
+            type: string
+        - name: per_page
+          in: query
+          description: Number of results to return per page
+          type: integer
+        - name: page
+          in: query
+          description: Page of results to return
+          type: integer
       responses:
         '200':
           description: Successful response
