@@ -521,10 +521,11 @@ paths:
           in: query
           description: Only return result data and no other list information
           type: boolean
-        - name: columns
+        - name: 'columns[]'
           in: query
           description: Used in conjunction with "results_only", this will only return the specific columns requested
           type: array
+          collectionFormat: multi
           items:
             type: string
         - name: per_page
