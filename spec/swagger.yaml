@@ -83,6 +83,8 @@ tags:
     description: Manage positions on your company's org. chart
   - name: comments
     description: Manage feedback left for employees
+  - name: feedback requests
+    description: Manage feedback requests for and about employees
   - name: documents
     description: Manage personnel and company documents
   - name: custom attributes
@@ -773,6 +775,27 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/PositionInstanceResponse'
+  '/feedback_requests':
+    post:
+      summary: Create a feedback request
+      description: Create a feedback request for a respondent employee
+      tags:
+        - feedback requests
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: body
+          name: body
+          description: Feedback request data
+          required: true
+          schema:
+            $ref: "#/definitions/FeedbackRequestCreateRequest"
+      responses:
+        '200':
+          description: Feedback request created
+          schema:
+            $ref: '#/definitions/FeedbackRequestResponse'
   '/comments':
     post:
       summary: Create comment
@@ -898,6 +921,9 @@ definitions:
       deleted:
         type: boolean
         description: Indicate whether the comment is deleted or not
+      feedback_request_id:
+        type: integer
+        description: Attach this comment to a specific feedback request
       visible_to_recipient:
         type: boolean
         description: Indicate whether this comment is visible to the recipient or not
@@ -906,14 +932,35 @@ definitions:
       delete_attachment:
         type: boolean
         description: Delete the existing attachment from the comment. If a new attachment is being uploaded to overwrite the existing one, this field should be set to true or the new attachment will not be used.
+  FeedbackRequestCreateRequest:
+    type: object
+    properties:
+      respondent_id: 
+        type: integer
+        description: The user ID for the feedback request respondent
+      instructions:
+        type: string
+        description: The instructions for this feedback request
+      respondent_selected_audience:
+        type: boolean
+        description: Indicates whether the respondent will choose the recipients for this feedback request
+      recipient_ids:
+        description: Array of user ID's to the feedback request is for.
+        type: array
+        items: {
+          type: integer
+        }
   CommentCreateRequest:
     type: object
     properties:
       content:
         type: string
         description: Content of the feedback
+      feedback_request_id:
+        type: integer
+        description: Attach this comment to a specific feedback request
       recipient_ids:
-        description: Array of user ID's to create the review on behalf of. Add the string value \'self\' to this array to create a comment for the user that is authenticated via the API. 
+        description: Array of user ID's to create the comment on behalf of. Add the string value \'self\' to this array to create a comment for the user that is authenticated via the API. 
         type: array
         items: {
           type: integer
@@ -976,6 +1023,17 @@ definitions:
       total:
         type: integer
         description: Total number of results 
+  FeedbackRequestResponse:
+    type: object
+    properties:
+      id: 
+        type: integer
+        format: int64
+      instructions:
+        type: string
+      responses:
+        type: array
+        description: Array of request responses and their recipients
   UserResponse:
     type: object
     properties:
