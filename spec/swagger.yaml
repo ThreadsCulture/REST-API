@@ -1034,6 +1034,20 @@ definitions:
       responses:
         type: array
         description: Array of request responses and their recipients
+        items: {
+          $ref: '#/definitions/FeedbackRequestResponses'
+        }
+  FeedbackRequestResponses:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      recipient:
+        $ref: '#/definitions/UserResponse'
+      feedback:
+        type: string
+        description: The content of the feedback response comment
   UserResponse:
     type: object
     properties:
