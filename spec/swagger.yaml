@@ -796,6 +796,25 @@ paths:
           description: Feedback request created
           schema:
             $ref: '#/definitions/FeedbackRequestResponse'
+  '/feedback_request_responses/{feedback_request_response_id}/reminder':
+    post:
+      summary: Send reminder
+      description: Send a reminder for a feedback request response
+      tags:
+        - feedback requests
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: path
+          name: feedback_request_response_id
+          description: The ID of the unanswered feedback request response
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+    
   '/comments':
     post:
       summary: Create comment
