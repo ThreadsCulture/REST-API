@@ -53,7 +53,7 @@ info:
     Tokens expire after 2 hours. 
     
   x-logo:
-    url: http://www.threadsculture.com/content/uploads/2016/09/threads_logo_small.png
+    url: http://login.ourthreads.com/images/logo/logo-head.png
 basePath: /api/v1
 host: YOUR-COMPANY-PORTAL.ourthreads.com
 schemes:
@@ -796,7 +796,7 @@ paths:
           description: Feedback request created
           schema:
             $ref: '#/definitions/FeedbackRequestResponse'
-  '/feedback_request_responses/{feedback_request_response_id}/reminder':
+  '/feedback_request_responses/reminders':
     post:
       summary: Send reminder
       description: Send a reminder for a feedback request response
@@ -806,11 +806,12 @@ paths:
         - oauth:
           - basic
       parameters:
-        - in: path
-          name: feedback_request_response_id
-          description: The ID of the unanswered feedback request response
+        - in: body
+          name: body
+          description: Responses to send reminders for
           required: true
-          type: string
+          schema: 
+            $ref: "#/definitions/RemindersRequest"
       responses:
         200:
           description: OK
@@ -978,6 +979,9 @@ definitions:
       feedback_request_id:
         type: integer
         description: Attach this comment to a specific feedback request
+      feedback_request_response_id:
+        type: integer
+        description: Attach this comment to a specific feedback request response
       recipient_ids:
         description: Array of user ID's to create the comment on behalf of. Add the string value \'self\' to this array to create a comment for the user that is authenticated via the API. 
         type: array
@@ -1360,6 +1364,16 @@ definitions:
       type:
         description: Mime type of file
         type: string
+  RemindersRequest:
+    type: object
+    required: ["response_ids"]
+    properties:
+      response_ids:
+        description: Array of feedback request response ID's to send reminders for
+        type: array
+        items: {
+          type: integer
+        }
   ReviewUpdateRequest:
     type: object
     required: ["review_ids"]
