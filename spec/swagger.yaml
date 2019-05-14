@@ -873,7 +873,20 @@ paths:
           description: Invalid comment supplied
         '422':
           description: Required parameter missing
-  '/survey':
+  '/surveys':
+    get: 
+      summary: List surveys
+      description: List all available surveys (collections)
+      tags:
+        - surveys
+      security:
+        - oauth:
+          - basic
+      responses:
+        '200':
+          description: List of surveys
+          schema:
+            $ref: '#/definitions/CollectionResponse'
     post:
       summary: Create a survey
       description: Create a survey with check-ins (survey responses). At this time only self check-ins are supported and the recipient_id should always be the same as the respondent_id.
@@ -894,10 +907,12 @@ paths:
           description: Survey created successfully
           schema:
             $ref: '#/definitions/SurveyShowResponse'
-  '/survey/{survey_id}':
+  '/surveys/{survey_id}':
     get:
       summary: Get a survey
       description: Gets survey information with all responses (check-ins)
+      tags:
+        - surveys
       parameters:
         - in: path
           name: survey_id
@@ -937,7 +952,7 @@ paths:
         summary: Update a check-in
         tags:
           - surveys
-        description: Update survey response information
+        description: Update survey response information. Survey questions all are answers with this route through the `answers` property. 
         security:
           - oauth:
             - basic
@@ -1424,15 +1439,25 @@ definitions:
   SurveyResponseUpdateRequest:
     type: object
     properties:
+      answers:
+        type: array
+        description: Array of question ID's and value objects. This is a mutational update; answers will be created or updated, but omitted answers will not be deleted. To delete an answer, provide the question_id and NULL as the value. 
+        items:
+          type: object
+          properties:
+            question_id:
+              type: integer
+            value:
+              type: object
+      completed:
+        type: boolean
+        description: Set to true to mark the survey response as completed. Will trigger completion email notification.
       respondent_id:
         type: integer
         description: Set the user ID of the respondent
       recipient_id:
         type: integer
         description: Set the user ID of the recipient
-      completed:
-        type: boolean
-        description: Set to true to mark the survey response as completed. Will trigger completion email notification.
   SurveyShowResponse:
     type: object
     properties:
