@@ -85,6 +85,8 @@ tags:
     description: Manage feedback left for employees
   - name: feedback requests
     description: Manage feedback requests for and about employees
+  - name: surveys 
+    description: Create and manage surveys (check-ins)
   - name: documents
     description: Manage personnel and company documents
   - name: custom attributes
@@ -871,6 +873,125 @@ paths:
           description: Invalid comment supplied
         '422':
           description: Required parameter missing
+  '/survey':
+    post:
+      summary: Create a survey
+      description: Create a survey with check-ins (survey responses). At this time only self check-ins are supported and the recipient_id should always be the same as the respondent_id.
+      tags:
+        - surveys
+      security:
+        - oauth:
+          - basic
+      parameters:
+        - in: body
+          name: body
+          description: Survey to create 
+          required: true
+          schema:
+            $ref: "#/definitions/SurveyCreateRequest"
+      responses:
+        '200':
+          description: Survey created successfully
+          schema:
+            $ref: '#/definitions/SurveyShowResponse'
+  '/survey/{survey_id}':
+    get:
+      summary: Get a survey
+      description: Gets survey information with all responses (check-ins)
+      parameters:
+        - in: path
+          name: survey_id
+          description: The survey ID to display
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/SurveyShowResponse'
+        '404':
+          description: Survey response not found
+  '/survey_responses/{survey_response_id}':
+      get:
+        summary: Get a check-in
+        description: Get a specific check-in (survey response) by ID
+        tags:
+          - surveys
+        security:
+          - oauth:
+            - basic
+        parameters:
+          - in: path
+            name: survey_response_id
+            description: The survey response ID (check-in) to display
+            required: true
+            type: string
+        responses:
+          '200':
+            description: Successful response
+            schema:
+              $ref: '#/definitions/SurveyResponseShowResponse'
+          '404':
+            description: Survey response not found
+      put:
+        summary: Update a check-in
+        tags:
+          - surveys
+        description: Update survey response information
+        security:
+          - oauth:
+            - basic
+        parameters:
+          - in: path
+            name: survey_response_id
+            description: The survey response ID to update
+            required: true
+            type: string
+          - in: body
+            name: body
+            description: User information to update
+            required: false
+            schema:
+              $ref: "#/definitions/SurveyResponseUpdateRequest"
+        responses:
+          '200':
+            description: User updated
+            schema:
+              $ref: '#/definitions/SurveyResponseShowResponse'
+          '400':
+            description: Invalid user supplied
+          '422':
+            description: Required parameter missing
+  '/survey_responses/reminders':
+      post:
+        summary: Send reminders 
+        description: Send reminders for a set of survey responses
+        security:
+          - oauth:
+            - basic
+        tags:
+          - surveys
+        parameters:
+          - in: body
+            name: body
+            description: Survey responses (check-ins) to send reminders for
+            required: true
+            schema:
+              type: object
+              properties:
+                response_ids:
+                  type: array
+                  description: Array of survey response ID's 
+                  items: {
+                    type: integer
+                  }
+        responses:
+          '204':
+            description: Reminders successfully queued for sending
+          '400':
+            description: Invalid response IDs supplied
+          '422':
+            description: Required parameter missing
 definitions:
   UserCreateRequest:
     type: object
@@ -1281,6 +1402,108 @@ definitions:
           nav:
             type: object
             description: Navigation items as an object tree (only appears if you are the user being requested)
+  SurveyCreateRequest:
+    type: object
+    properties:
+      title:
+        type: string
+        description: Set the title of the survey
+      due_date:
+        type: string
+        format: date
+        description: ISO 8601 formatted date string
+      responses:
+        type: array
+        items: 
+          type: object
+          properties:
+            respondent_id:
+              type: integer
+            recipient_id:
+              type: integer
+  SurveyResponseUpdateRequest:
+    type: object
+    properties:
+      respondent_id:
+        type: integer
+        description: Set the user ID of the respondent
+      recipient_id:
+        type: integer
+        description: Set the user ID of the recipient
+      completed:
+        type: boolean
+        description: Set to true to mark the survey response as completed. Will trigger completion email notification.
+  SurveyShowResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      created_by:
+        type: string
+      created_at:
+        type: string
+        format: date
+      due_date:
+        type: string
+        format: date
+      questions:
+        type: integer
+        description: Number of questions for this survey
+      responses:
+        type: array
+        items:
+          type: object
+          properties:
+            recipient_id:
+              type: integer
+            recipient:
+              type: string
+            respondent_id:
+              type: integer
+            respondent:
+              type: string
+            status:
+              type: string
+            answers:
+              type: integer
+              description: Number of answered questions
+  SurveyResponseShowResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      created_by:
+        type: string
+      status:
+        type: string
+      recipient:
+        type: object
+        items: {
+          $ref: '#/definitions/UserResponse'
+        }
+      respondent:
+        type: object
+        items: {
+          $ref: '#/definitions/UserResponse'
+        }
+      due_date:
+        type: string
+        format: date
+      last_updated:
+        type: string
+        format: date
+      title: 
+        type: string
+      visible_to:
+        type: array
+        items:
+          $ref: '#/definitions/UserResponse'
+      questions:
+        type: array
+        items: { 
+          type: object 
+        }
+        
   SendWelcomeRequest:
     type: object
     required: ["user_ids"]
