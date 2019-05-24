@@ -926,6 +926,28 @@ paths:
             $ref: '#/definitions/SurveyShowResponse'
         '404':
           description: Survey response not found
+    put:
+      summary: Update a survey
+      description: Update survey information
+      tags:
+        - surveys
+      parameters:
+        - in: path
+          name: survey_id
+          description: The survey ID to display
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Survey information to update
+          required: false
+          schema:
+            $ref: "#/definitions/SurveyUpdateRequest"
+      responses:
+        '200':
+          description: Survey updated successfully
+          schema:
+            $ref: '#/definitions/SurveyShowResponse'
   '/survey_responses/{survey_response_id}':
       get:
         summary: Get a check-in
@@ -1417,6 +1439,16 @@ definitions:
           nav:
             type: object
             description: Navigation items as an object tree (only appears if you are the user being requested)
+  SurveyUpdateRequest:
+    type: object
+    properties:
+      title:
+        type: string
+        description: Set the title of the survey
+      due_date:
+        type: string
+        format: date
+        description: ISO 8601 formatted date string   
   SurveyCreateRequest:
     type: object
     properties:
