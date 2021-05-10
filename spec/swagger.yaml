@@ -587,6 +587,24 @@ paths:
           description: Successfully updated reviews
           schema:
             $ref: '#/definitions/ReviewUpdateResponse'
+  /registrations:
+    post:
+      summary: Create new company registration
+      tags:
+        - registrations
+      description: Requires admin company authorization with `grant_type` set to `client_credentials`
+      parameters:
+        - in: body
+          name: body
+          description: Company to register
+          required: true
+          schema:
+            $ref: "#/definitions/RegisterCompanyRequest"
+      responses:
+        '200':
+          description: Successful creation
+        '400':
+          description: Invalid parameters
   /documents:
     get:
       summary: List documents
@@ -1654,6 +1672,21 @@ definitions:
         items: {
           type: integer
         }
+  RegisterCompanyRequest:
+    type: object
+    required: ["company_name", "first_name", "last_name", "phone_main", "email"]
+    properties:
+      company_name:
+        description: "Name of company to register"
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone_main:
+        type: string
+      email:
+        type: string
   ReviewUpdateRequest:
     type: object
     required: ["review_ids"]
